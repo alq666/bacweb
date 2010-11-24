@@ -34,10 +34,10 @@ class Bacula(tornado.web.Application):
         handlers = [(r"/", HomeHandler)]
         settings = dict(
             template_path=os.path.join(os.path.dirname(__file__), "templates"),
-                static_path=os.path.join(os.path.dirname(__file__), "static"),
-                ui_modules={"MediaModule": MediaModule},
-                xsrf_cookies=True,
-                cookie_secret="11oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo="
+            static_path=os.path.join(os.path.dirname(__file__), "static"),
+            ui_modules={"MediaModule": MediaModule},
+            xsrf_cookies=True,
+            cookie_secret="11oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo="
         )
         tornado.web.Application.__init__(self, handlers, **settings)
         
@@ -80,7 +80,7 @@ class BaseHandler(tornado.web.RequestHandler):
 
 class HomeHandler(BaseHandler):
     def get(self):
-        media = [Tape(x["VolumeName"], x["VolStatus"], x["LastWritten"], x["InChanger"], x["Slot"]) \
+        media = [Tape(x["VolumeName"], x["VolStatus"], x["LastWritten"], x["InChanger"] != 0, x["Slot"]) \
             for x in self.db.query("select VolumeName, VolStatus, LastWritten, InChanger, Slot from Media where LastWritten < date_sub(current_date(), interval 90 day)")]
         self.render("home.html", title="Home", media=media)
 

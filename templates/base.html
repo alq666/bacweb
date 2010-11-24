@@ -4,17 +4,20 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>Bacweb</title>
     <link rel="stylesheet" href="{{ static_url("bacweb.css") }}" type="text/css"/>
+    <link rel="stylesheet" href="{{ static_url("demo_table.css") }}" type="text/css"/>
+	<script type="text/javascript" src="{{ static_url("jquery-1.4.4.min.js") }}"></script>
     {% block head %}{% end %}
   </head>
   <body>
     <div id="body">
       <div id="header">
-        <div style="float:right">Testing</div>
-		<div style="float:right"><a href=""></div>
+        <div style="float:right">Something</div>
         <h1><a href="/">Bacweb</a></h1>
       </div>
       <div id="content">{% block body %}{% end %}</div>
     </div>
     {% block bottom %}{% end %}
   </body>
+
+	
 </html>

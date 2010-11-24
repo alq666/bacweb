@@ -1,10 +1,39 @@
 {% extends "base.html" %}
+{% block head %}
+	<script type="text/javascript" src="{{ static_url("jquery.dataTables.min.js") }}"></script>
+{% end %}
 
 {% block body %}
-	<h1>Old Media</h1>
-	<ul>
-	{% for medium in media %}
-  		<li>{{ modules.MediaModule(medium) }}</li>
-	{% end %}
-	</ul>
+	<h1>Media</h1>
+	<table id="loaded_media">
+		<thead>
+			<tr>
+				<th>Volume Name</th>
+				<th>Slot</th>
+				<th>Last Written</th>
+				<th>Status</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for medium in media %}
+			{% if medium.inchanger %}
+			<tr>
+				{% for attr in ("name", "slot", "last_written", "status") %}
+				<td class="media">
+  					{{ getattr(medium, attr) }}
+				</td>
+				{% end %}
+			</tr>
+			{% end %}
+		{% end %}
+		</tbody>
+	</table>
+	
+	<script type="text/javascript">
+	$(document).ready(function() {
+		oTable = $('#loaded_media').dataTable({
+			"bJQueryUI": true,
+			"sPaginationType": "full_numbers"
+		});
+	} );	</script>
 {% end %}

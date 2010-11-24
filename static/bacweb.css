@@ -123,32 +123,9 @@ a code {
   line-height: 16pt;
 }
 
-.compose td {
+.media td {
   vertical-align: middle;
   padding-bottom: 5px;
 }
 
-.compose td.field {
-  padding-right: 10px;
-}
-
-.compose .title,
-.compose .submit {
-  font-family: "Helvetica Nue", Helvetica, Arial, sans-serif;
-  font-weight: bold;
-}
-
-.compose .title {
-  font-size: 20pt;
-}
-
-.compose .title,
-.compose .markdown {
-  width: 100%;
-}
-
-.compose .markdown {
-  height: 500px;
-  line-height: 16pt;
-}
 
