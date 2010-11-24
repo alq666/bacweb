@@ -31,21 +31,48 @@ define("mysql_password", default="", help="bacula database password")
 
 class Bacula(tornado.web.Application):
     def __init__(self):
-	handlers = [(r"/", HomeHandler)]
-	settings = dict(
-	    template_path=os.path.join(os.path.dirname(__file__), "templates"),
-            static_path=os.path.join(os.path.dirname(__file__), "static"),
-            #ui_modules={"Entry": EntryModule},
-            xsrf_cookies=True,
-            cookie_secret="11oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo="
-	)
-	tornado.web.Application.__init__(self, handlers, **settings)
+        handlers = [(r"/", HomeHandler)]
+        settings = dict(
+            template_path=os.path.join(os.path.dirname(__file__), "templates"),
+                static_path=os.path.join(os.path.dirname(__file__), "static"),
+                ui_modules={"Media": Media},
+                xsrf_cookies=True,
+                cookie_secret="11oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo="
+        )
+        tornado.web.Application.__init__(self, handlers, **settings)
 
-	# Have one global connection to the blog DB across all handlers
-        self.db = tornado.database.Connection(
-            host=options.mysql_host, database=options.mysql_database,
-            user=options.mysql_user, password=options.mysql_password)
+        # Have one global connection to the blog DB across all handlers
+        self.db = tornado.database.Connection(host=options.mysql_host, database=options.mysql_database, user=options.mysql_user, password=options.mysql_password)
 
+#
+# Model
+#
+class Media(object):
+	def __init__(self, name, status, last_written):
+		self.name = name
+		self.status = status
+		self.last_written = last_written
+	
+class Tape(Media):
+	def __init__(self, name, status, last_written, inchanger, slot):
+		Media.__init__(self, name, status, last_written)
+		assert inchanger in (True, False)
+		self.inchanger = inchanger
+		assert slot >= 0
+		self.slot = slot
+		
+#
+# UI Modules
+#
+class MediaModule(tornado.web.UIModule):
+    def render(self, media):
+		"""
+		"""
+        return self.render_string("module-media.html", media=media)
+
+#
+# Handlers
+#
 class BaseHandler(tornado.web.RequestHandler):
     @property
     def db(self):
@@ -53,7 +80,13 @@ class BaseHandler(tornado.web.RequestHandler):
 
 class HomeHandler(BaseHandler):
     def get(self):
-	self.render("home.html")
+        media = self.db.query("select VolumeName, VolStatus, LastWritten from Media where InChanger = 0 and LastWritten < date_sub(current_date(), interval 90 day)")
+        self.render("home.html", title="Home", media=media)
+    
+class MediaHandler(BaseHandler):
+    def get(self):
+        media = self.db.query("select VolumeName, VolStatus, LastWritten from Media where InChanger = 0 and LastWritten < date_sub(current_date(), interval 90 day)")
+        self.render("media.html", media=media)
 
 if __name__ == "__main__":
     http_server = tornado.httpserver.HTTPServer(Bacula())

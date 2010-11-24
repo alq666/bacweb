@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 
 {% block body %}
-	<div>Bacweb</div>
+  <div>
+  	<h1>Available tapes</h1>
 	{% for medium in media %}
-  		{{ modules.MediaModule(medium) }}
+  		{{ modules.Media(medium) }}
 	{% end %}
+  </div>
 {% end %}
