@@ -1,1 +1,1 @@
-Media: {{ media.name }} - {{ media.last_written }} - {{ media.status }}
+Media {% if media.inchanger %}(slot {{ media.slot }}){% end %} {{ media.name }} - {{ media.last_written }} - {{ media.status }}
