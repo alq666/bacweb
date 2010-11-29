@@ -45,21 +45,35 @@ class Bacula(tornado.web.Application):
         self.db = tornado.database.Connection(host=options.mysql_host, database=options.mysql_database, user=options.mysql_user, password=options.mysql_password)
 
 #
-# Model
+# Model, could use an ORM here...
 #
 class Media(object):
-    def __init__(self, name, status, last_written):
+    def __init__(self, name, status, last_written, pool, retention):
         self.name = name
         self.status = status
         self.last_written = last_written
+        self.pool = pool
+        assert retention >= 0
+        self.retention = retention
 
 class Tape(Media):
-    def __init__(self, name, status, last_written, inchanger, slot):
-        Media.__init__(self, name, status, last_written)
+    def __init__(self, name, status, last_written, pool, retention, inchanger, slot):
+        Media.__init__(self, name, status, last_written, pool, retention)
         assert inchanger in (True, False)
         self.inchanger = inchanger
         assert slot >= 0
         self.slot = slot
+
+class TapeSet(object):
+    """Wraps a DB query"""
+    def __init__(self, db, query):
+        self.db = db
+        assert len(query) > 0
+        self.query = query
+        self.media = [Tape(x["VolumeName"], x["VolStatus"], x["LastWritten"], int(x["VolRetention"] / (3600.0 * 24)), x["Name"], x["InChanger"] != 0, x["Slot"]) for x in self.db.query(self.query)]
+        
+    def get_media(self):
+        return self.media
 
 #
 # UI Modules
@@ -80,9 +94,33 @@ class BaseHandler(tornado.web.RequestHandler):
 
 class HomeHandler(BaseHandler):
     def get(self):
-        media = [Tape(x["VolumeName"], x["VolStatus"], x["LastWritten"], x["InChanger"] != 0, x["Slot"]) \
-            for x in self.db.query("select VolumeName, VolStatus, LastWritten, InChanger, Slot from Media where LastWritten < date_sub(current_date(), interval 90 day)")]
-        self.render("home.html", title="Home", media=media)
+        # Tapes that should be in the library but aren't
+        missing_media_q = """select VolumeName, VolStatus, LastWritten, Pool.Name, InChanger, Slot, Media.VolRetention
+                               from Media
+                               join Pool
+                                 on (Media.PoolId = Pool.PoolId)
+                              where LastWritten < date_sub(current_date(), interval 90 day)
+                                and InChanger = 0
+                                and Slot = 0
+                                and VolStatus not in ('Disabled', 'Archive')"""
+        missing_media = TapeSet(self.db, missing_media_q).get_media()
+        
+        # Tapes in the library
+        loaded_media_q = """select VolumeName, VolStatus, LastWritten, Pool.Name, InChanger, Slot, Media.VolRetention
+                              from Media
+                              join Pool
+                                on (Media.PoolId = Pool.PoolId)
+                             where InChanger = 1
+                             order by Slot asc"""
+        loaded_media = TapeSet(self.db, loaded_media_q).get_media()
+        
+        # Tapes expected to be a 
+        
+        self.render("home.html", title="Home", loaded=loaded_media, missing=missing_media)
+
+class MediaHandler(BaseHandler):
+    def get(self, medium_name):
+        pass
 
 if __name__ == "__main__":
     http_server = tornado.httpserver.HTTPServer(Bacula())

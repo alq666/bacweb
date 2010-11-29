@@ -4,21 +4,26 @@
 {% end %}
 
 {% block body %}
-	<h1>Media</h1>
+	<h1>Loaded Media - {{ len(loaded) }} volume(s)</h1>
 	<table id="loaded_media">
 		<thead>
 			<tr>
 				<th>Volume Name</th>
+				<th>Pool</th>
 				<th>Slot</th>
 				<th>Last Written</th>
 				<th>Status</th>
+				<th>Retention (days)</th>
 			</tr>
 		</thead>
 		<tbody>
-		{% for medium in media %}
+		{% for medium in loaded %}
 			{% if medium.inchanger %}
 			<tr>
-				{% for attr in ("name", "slot", "last_written", "status") %}
+				<td class="media">
+					<a href="/media/{{ medium.name }}">{{ medium.name }}</a>
+				</td>
+				{% for attr in ("pool", "slot", "last_written", "status", "retention") %}
 				<td class="media">
   					{{ getattr(medium, attr) }}
 				</td>
@@ -28,12 +33,44 @@
 		{% end %}
 		</tbody>
 	</table>
+
+	<h1>Missing Media - {{ len(missing) }} volume(s)</h1>
+	<table id="missing_media">
+		<thead>
+			<tr>
+				<th>Volume Name</th>
+				<th>Pool</th>
+				<th>Last Written</th>
+				<th>Status</th>
+				<th>Retention (days)</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for medium in missing %}
+			<tr>
+				<td class="media">
+					<a href="/media/{{ medium.name }}">{{ medium.name }}</a>
+				</td>
+				{% for attr in ("pool", "last_written", "status", "retention") %}
+				<td class="media">
+  					{{ getattr(medium, attr) }}
+				</td>
+				{% end %}
+			</tr>
+		{% end %}
+		</tbody>
+	</table>
 	
 	<script type="text/javascript">
 	$(document).ready(function() {
-		oTable = $('#loaded_media').dataTable({
+		lTable = $('#loaded_media').dataTable({
 			"bJQueryUI": true,
 			"sPaginationType": "full_numbers"
 		});
-	} );	</script>
+		mTable = $('#missing_media').dataTable({
+			"bJQueryUI": true,
+			"sPaginationType": "full_numbers"
+		});
+	} );
+	</script>
 {% end %}
