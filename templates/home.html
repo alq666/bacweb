@@ -19,7 +19,13 @@
 		</thead>
 		<tbody>
 		{% for medium in loaded %}
+			{% if medium.status == "Error" %}
+			<tr class="error">
+			{% elif medium.status == "Disabled" %}
+			<tr class="disabled">
+			{% else %}
 			<tr>
+			{% end %}
 				<td>
 					<a href="/media/{{ medium.name }}">{{ medium.name }}</a>
 				</td>
@@ -47,7 +53,13 @@
 		</thead>
 		<tbody>
 		{% for medium in missing %}
+			{% if medium.status == "Error" %}
+			<tr class="error">
+			{% elif medium.status == "Disabled" %}
+			<tr class="disabled">
+			{% else %}
 			<tr>
+			{% end %}
 				<td>
 					<a href="/media/{{ medium.name }}">{{ medium.name }}</a>
 				</td>
@@ -75,7 +87,13 @@
 		</thead>
 		<tbody>
 		{% for medium in remote %}
+			{% if medium.status == "Error" %}
+			<tr class="error">
+			{% elif medium.status == "Disabled" %}
+			<tr class="disabled">
+			{% else %}
 			<tr>
+			{% end %}
 				<td>
 					<a href="/media/{{ medium.name }}">{{ medium.name }}</a>
 				</td>

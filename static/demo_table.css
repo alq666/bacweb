@@ -151,7 +151,13 @@ table.display td.center {
 	text-align: center;
 }
 
+table.display tr.error {
+    background-color: red;
+}
 
+table.display tr.disabled {
+    background-color: gray;
+}
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * DataTables sorting
