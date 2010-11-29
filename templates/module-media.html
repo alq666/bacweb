@@ -1,1 +1,15 @@
-Media {% if media.inchanger %}(slot {{ media.slot }}){% end %} {{ media.name }} - {{ media.last_written }} - {{ media.status }}
+<table class="display" id="media_details">
+	<thead>
+		<th>Property</th>
+		<th>Value</th>
+	</thead>
+	<tbody>
+		{% for attr in ("name", "status", "last_written", "pool", "retention", "inchanger", "slot") %}
+		<tr>
+			<td>{{ attr }}</td>
+			<td>{{ getattr(media, attr) }}</td>
+		</tr>
+		{% end %}
+	</tbody>
+</table>
+		

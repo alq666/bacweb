@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block head %}
+	<script type="text/javascript" src="{{ static_url("jquery.dataTables.min.js") }}"></script>
+{% end %}
+
+{% block body %}
+{{ modules.MediaModule(media) }}
+	
+	<script type="text/javascript">
+	$(document).ready(function() {
+		lTable = $('#media_details').dataTable({
+			"bJQueryUI": true,
+			"sPaginationType": "full_numbers"
+		});
+	} );
+	</script>
+{% end %}

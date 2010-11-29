@@ -5,7 +5,8 @@
 
 {% block body %}
 	<h1>Loaded Media - {{ len(loaded) }} volume(s)</h1>
-	<table id="loaded_media">
+	<blockquote>Media that is currently in the library</blockquote>
+	<table id="loaded_media" class="display">
 		<thead>
 			<tr>
 				<th>Volume Name</th>
@@ -18,24 +19,23 @@
 		</thead>
 		<tbody>
 		{% for medium in loaded %}
-			{% if medium.inchanger %}
 			<tr>
-				<td class="media">
+				<td>
 					<a href="/media/{{ medium.name }}">{{ medium.name }}</a>
 				</td>
 				{% for attr in ("pool", "slot", "last_written", "status", "retention") %}
-				<td class="media">
+				<td>
   					{{ getattr(medium, attr) }}
 				</td>
 				{% end %}
 			</tr>
-			{% end %}
 		{% end %}
 		</tbody>
 	</table>
-
+	
 	<h1>Missing Media - {{ len(missing) }} volume(s)</h1>
-	<table id="missing_media">
+	<blockquote>Media that should be in the library but is not</blockquote>
+	<table id="missing_media" class="display">
 		<thead>
 			<tr>
 				<th>Volume Name</th>
@@ -48,11 +48,39 @@
 		<tbody>
 		{% for medium in missing %}
 			<tr>
-				<td class="media">
+				<td>
 					<a href="/media/{{ medium.name }}">{{ medium.name }}</a>
 				</td>
 				{% for attr in ("pool", "last_written", "status", "retention") %}
-				<td class="media">
+				<td>
+  					{{ getattr(medium, attr) }}
+				</td>
+				{% end %}
+			</tr>
+		{% end %}
+		</tbody>
+	</table>
+	
+	<h1>Remote Media - {{ len(remote) }} volume(s)</h1>
+	<blockquote>Media that is expected to be remote because of its retention period</blockquote>
+	<table id="remote_media" class="display">
+		<thead>
+			<tr>
+				<th>Volume Name</th>
+				<th>Pool</th>
+				<th>Last Written</th>
+				<th>Status</th>
+				<th>Retention (days)</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for medium in remote %}
+			<tr>
+				<td>
+					<a href="/media/{{ medium.name }}">{{ medium.name }}</a>
+				</td>
+				{% for attr in ("pool", "last_written", "status", "retention") %}
+				<td>
   					{{ getattr(medium, attr) }}
 				</td>
 				{% end %}
@@ -68,6 +96,10 @@
 			"sPaginationType": "full_numbers"
 		});
 		mTable = $('#missing_media').dataTable({
+			"bJQueryUI": true,
+			"sPaginationType": "full_numbers"
+		});
+		rTable = $('#remote_media').dataTable({
 			"bJQueryUI": true,
 			"sPaginationType": "full_numbers"
 		});

@@ -28,16 +28,6 @@ textarea {
   font-size: 12pt;
 }
 
-table {
-  border-collapse: collapse;
-  border: 0;
-}
-
-td {
-  border: 0;
-  padding: 0;
-}
-
 h1,
 h2,
 h3,
@@ -121,11 +111,6 @@ a code {
 .entry .body {
   margin-top: 1em;
   line-height: 16pt;
-}
-
-.media td {
-  vertical-align: middle;
-  padding-bottom: 5px;
 }
 
 
