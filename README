@@ -1,3 +1,4 @@
-Simple tornado-based bacula viewer
+Simple tornado-based bacula viewer. I got tired of using bconsole and the
+existing web front-ends look really dated.
 
 This code is in the public domain with the exceptions of files coming from datatables.net
